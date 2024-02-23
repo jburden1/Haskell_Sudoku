@@ -17,11 +17,11 @@ getValue :: Board -> Position -> Value
 -- getValue bd1 (8,8)
 getValue bd (row, col) = bd !! row !! col
 
--- puts a value into a position on the board
-putValue :: Board -> Position -> Value -> Board
+-- puts a value on the board
+putValue :: Board -> Square -> Board
 -- putValue bd1 ((0, 0), '9')
 -- putValue bd1 ((3, 5), '1')
-putValue bd (row, col) val = replaceListElement bd (replaceListElement (bd !! row) val col) row 
+putValue bd ((row, col), val) = replaceListElement bd (replaceListElement (bd !! row) val col) row 
 
 -- replaces an element in a list
 replaceListElement :: [a] -> a -> Int -> [a]

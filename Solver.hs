@@ -73,7 +73,7 @@ findListBlank lst = findListBlank' lst 0
 fillValues :: Position -> Board -> [Board]
 -- Try:
 -- fillValues (0,0) bdBlank
-fillValues pos bd = [putValue bd pos val | val <- ['1'..'9']]
+fillValues pos bd = [putValue bd (pos, val) | val <- ['1'..'9']]
 
 -- removes invalid boards from generated list of boards
 pruneInvalid :: [Board] -> Position -> [Board]
