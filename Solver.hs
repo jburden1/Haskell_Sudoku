@@ -1,7 +1,7 @@
 module Solver where
 import Sudoku
 import Boards
-import GameEngine
+import Game
 import Data.Maybe
 
 -- produces a solution for the board or 'Nothing' if the board is unsolvable
@@ -114,11 +114,6 @@ trimBoxRows bd col
     | col <= 2 = [take 3 row | row <- bd]
     | col <= 5 = [take 3 (drop 3 row) | row <- bd]
     | otherwise = [drop 6 row | row <- bd]
-
--- produces a single list from a list of lists
-appendLists :: [[a]] -> [a]
-appendLists [] = []
-appendLists (h:t) = h ++ appendLists t
 
 -- produces 'True' if a row is valid, 'False' otherwise 
 validRow :: [Value] -> Bool
