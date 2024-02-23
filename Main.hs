@@ -1,6 +1,6 @@
 import Sudoku
 import Boards
-import GameEngine
+import Game
 import Solver
 import Data.Maybe
 
@@ -56,13 +56,12 @@ runGame :: Board -> Board -> IO ()
 runGame solnBoard gameBoard = 
     do
         putStrLn "Current board:"
-
+        putStrLn (formatBoard gameBoard)
         putStrLn "Choose one of the following options:"
         putStrLn "1. Update Square"
         putStrLn "2. Get Hint"
         putStrLn "3. Solve Board"
         putStrLn "4. Quit"
-
 
 
 
