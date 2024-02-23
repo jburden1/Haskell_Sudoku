@@ -9,5 +9,5 @@ type Value = Char
 -- a position (row, col) on the board
 type Position = (Int, Int)
 
-
-
+-- a postion and value on the board
+type Square = (Position, Value)
