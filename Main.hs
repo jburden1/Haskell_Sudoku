@@ -4,6 +4,8 @@ import Data.Maybe (fromJust, isJust)
 import Game (formatBoard, getValue, isBlank, putValue)
 import Solver (solveBoard)
 import Sudoku (Board)
+import TextFileReader (parseBoard)
+import System.Directory (doesFileExist)
 
 -- To run it, try:
 -- ghci
@@ -32,6 +34,7 @@ selectBoard =
     putStrLn "3. Easy"
     putStrLn "4. Moderate"
     putStrLn "5. Hard"
+    putStrLn "6. Custom Board"
     line <- getLine
     case line of
       "1" -> do
@@ -49,6 +52,16 @@ selectBoard =
       "5" -> do
         putStrLn "Selected hard board..."
         return bdHard
+      "6" -> do
+        putStrLn "Type the name of the board file in the format example.txt"
+        fileName <- getLine
+        fileExists <- doesFileExist fileName
+        if fileExists
+          then do
+            parseBoard fileName
+          else do
+            putStrLn "Invalid file name provided..."
+            selectBoard
       _ -> do
         putStrLn "Invalid selection..."
         selectBoard
