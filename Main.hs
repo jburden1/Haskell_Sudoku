@@ -1,10 +1,9 @@
 import Boards
-import Data.Maybe ( fromJust, isJust )
 import Data.Char (digitToInt, isDigit)
-import Game ( formatBoard, getValue, putValue, isBlank )
-import Solver ( solveBoard )
-import Sudoku ( Board )
-
+import Data.Maybe (fromJust, isJust)
+import Game (formatBoard, getValue, isBlank, putValue)
+import Solver (solveBoard)
+import Sudoku (Board)
 
 -- To run it, try:
 -- ghci
@@ -56,17 +55,20 @@ selectBoard =
 
 runGame :: Board -> Board -> IO ()
 runGame solnBoard gameBoard = do
-  putStrLn $ unlines [
-    "Current board:",
-    formatBoard gameBoard,
-    "Choose one of the following options:",
-    "1. Update Square",
-    "2. Get Hint",
-    "3. Solve Board",
-    "4. Quit"]
-  line <- getLine
-  case line of
-    "1" -> do
+  putStrLn $
+    unlines
+      [ "Current board:",
+        formatBoard gameBoard,
+        "Choose one of the following options:",
+        "1. Update Square",
+        "2. Get Hint",
+        "3. Solve Board",
+        "4. Quit"
+      ]
+  choice <- getChar
+  putStrLn "\n"
+  case choice of
+    '1' -> do
       putStrLn "Select a blank square to update in the format (x,y) with x representing the horizontal cell number and y the vertical cell number with both x and y between 1 and 9 inclusive."
       coord <- getLine
       if not (isValidCoordinates coord)
@@ -84,7 +86,7 @@ runGame solnBoard gameBoard = do
               newValue <- getChar
               putStrLn "\n"
               if not (isDigit newValue)
-                then do 
+                then do
                   putStrLn "Invalid choice. Character typed is not a number"
                   runGame solnBoard gameBoard
                 else do
@@ -95,23 +97,30 @@ runGame solnBoard gameBoard = do
                     else do
                       let newBoard = putValue gameBoard ((digitToInt x - 1, digitToInt y - 1), newValue)
                       runGame solnBoard newBoard
-    "2" -> do
-      putStrLn "Select square to receive answer for in the format (x, y) with x representing the horizontal cell number and y the vertical cell number with both x and y between 1 and 9 inclusive."
+    '2' -> do
+      putStrLn "Select square to receive answer for in the format (x, y) with x representing the horizontal cell number and y the vertical cell number with both x and y between 1 and 9 inclusive.\n"
       coord <- getLine
-      -- Validate input format and length
       if not (isValidCoordinates coord)
         then do
-          putStrLn "Invalid input. Please follow the guidelines."
+          putStrLn "Invalid input. Please follow the guidelines.\n"
           runGame solnBoard gameBoard
-        else putStrLn "valid input"
-    "3" -> do
+        else do
+          let [a, x, b, y, c] = coord
+          if not (isBlank (getValue gameBoard (digitToInt x - 1, digitToInt y - 1)))
+            then do
+              putStrLn "Chosen square is not currently blank. Choose a blank square.\n"
+              runGame solnBoard gameBoard
+            else do
+              let newValue = getValue solnBoard (digitToInt x - 1, digitToInt y - 1)
+              let newBoard = putValue gameBoard ((digitToInt x - 1, digitToInt y - 1), newValue)
+              putStrLn "Adding hint...\n"
+              runGame solnBoard newBoard
+    '3' -> do
       putStrLn "Solving current board..."
+      runGame solnBoard solnBoard
+    '4' -> do
+      putStrLn "Thank you for playing."
       return ()
-      -- Add your solveBoard function call here if applicable
-    "4" -> putStrLn "Thank you for playing."
-    _   -> do
-      putStrLn "Invalid selection..."
-      runGame solnBoard gameBoard
 
 -- Validate the input format and length
 isValidCoordinates :: String -> Bool
@@ -121,10 +130,10 @@ isValidCoordLength :: String -> Bool
 isValidCoordLength input = length input == 5
 
 isValidCoordFormat :: String -> Bool
-isValidCoordFormat (a:b:c:d:e:"")
+isValidCoordFormat (a : b : c : d : e : "")
   | a /= '(' = False
   | not (isDigit b) || digitToInt b < 1 || digitToInt b > 9 = False
   | c /= ',' = False
-  | not (isDigit d)|| digitToInt d < 1 || digitToInt d > 9 = False
+  | not (isDigit d) || digitToInt d < 1 || digitToInt d > 9 = False
   | e /= ')' = False
   | otherwise = True
