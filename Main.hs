@@ -1,7 +1,7 @@
 import Boards
 import Data.Maybe ( fromJust, isJust )
-import Data.Char (digitToInt)
-import Game ( formatBoard )
+import Data.Char (digitToInt, isDigit)
+import Game ( formatBoard, getValue, putValue, isBlank )
 import Solver ( solveBoard )
 import Sudoku ( Board )
 
@@ -54,42 +54,7 @@ selectBoard =
         putStrLn "Invalid selection..."
         selectBoard
 
--- runGame :: Board -> Board -> IO ()
--- runGame solnBoard gameBoard =
---   do
---     putStrLn "Current board:"
---     putStrLn (formatBoard gameBoard)
---     putStrLn "Choose one of the following options:"
---     putStrLn "1. Update Square"
---     putStrLn "2. Get Hint"
---     putStrLn "3. Solve Board"
---     putStrLn "4. Quit"
---     line <- getLine
---     case line of
---       "1" -> do
---         putStrLn "Select square to update in the format (x, y) with x representing the horizontal cell number"
---         putStrLn "and y the vertical cell number with both x and y between 1 and 9 inclusive."
---         line <- getLine
---         if length line != 5
---           then
---             putStrLn "Invalid input. Please follow the guidelines."
---             runGame solnBoard gameBoard
---           else putStrLn "cool"
---       "2" -> do
---         putStrLn "Select square to solve in the format (x, y) with x representing the horizontal cell number"
---         putStrLn "and y the vertical cell number with both x and y between 1 and 9 inclusive."
---         return ()
---       "3" -> do
---         putStrLn "Solving current board..."
---         return ()
---       -- putStrLn solveBoard bdModerate
---       "4" -> do
---         putStrLn "Thank you for playing."
---         return ()
---       _ -> do
---         putStrLn "Invalid selection..."
---         runGame solnBoard gameBoard
-
+runGame :: Board -> Board -> IO ()
 runGame solnBoard gameBoard = do
   putStrLn $ unlines [
     "Current board:",
@@ -102,14 +67,34 @@ runGame solnBoard gameBoard = do
   line <- getLine
   case line of
     "1" -> do
-      putStrLn "Select square to update in the format (x, y) with x representing the horizontal cell number and y the vertical cell number with both x and y between 1 and 9 inclusive."
+      putStrLn "Select a blank square to update in the format (x,y) with x representing the horizontal cell number and y the vertical cell number with both x and y between 1 and 9 inclusive."
       coord <- getLine
-      -- Validate input format and length
       if not (isValidCoordinates coord)
         then do
           putStrLn "Invalid input. Please follow the guidelines."
           runGame solnBoard gameBoard
-        else putStrLn "valid input"
+        else do
+          let [a, x, b, y, c] = coord
+          if not (isBlank (getValue gameBoard (digitToInt x - 1, digitToInt y - 1)))
+            then do
+              putStrLn "Chosen square is not currently blank. Choose a blank square."
+              runGame solnBoard gameBoard
+            else do
+              putStrLn "Type in the number (between 1 and 9) you want to place in the given coordinate with"
+              newValue <- getChar
+              putStrLn "\n"
+              if not (isDigit newValue)
+                then do 
+                  putStrLn "Invalid choice. Character typed is not a number"
+                  runGame solnBoard gameBoard
+                else do
+                  if getValue solnBoard (digitToInt x - 1, digitToInt y - 1) /= newValue
+                    then do
+                      putStrLn "Number chosen is incorrect. Try again."
+                      runGame solnBoard gameBoard
+                    else do
+                      let newBoard = putValue gameBoard ((digitToInt x - 1, digitToInt y - 1), newValue)
+                      runGame solnBoard newBoard
     "2" -> do
       putStrLn "Select square to receive answer for in the format (x, y) with x representing the horizontal cell number and y the vertical cell number with both x and y between 1 and 9 inclusive."
       coord <- getLine
@@ -121,6 +106,7 @@ runGame solnBoard gameBoard = do
         else putStrLn "valid input"
     "3" -> do
       putStrLn "Solving current board..."
+      return ()
       -- Add your solveBoard function call here if applicable
     "4" -> putStrLn "Thank you for playing."
     _   -> do
@@ -137,8 +123,8 @@ isValidCoordLength input = length input == 5
 isValidCoordFormat :: String -> Bool
 isValidCoordFormat (a:b:c:d:e:"")
   | a /= '(' = False
-  | digitToInt b < 1 || digitToInt b > 9 = False
+  | not (isDigit b) || digitToInt b < 1 || digitToInt b > 9 = False
   | c /= ',' = False
-  | digitToInt d < 1 || digitToInt d > 9 = False
+  | not (isDigit d)|| digitToInt d < 1 || digitToInt d > 9 = False
   | e /= ')' = False
   | otherwise = True
