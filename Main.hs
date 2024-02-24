@@ -77,7 +77,7 @@ runGame solnBoard gameBoard = do
           runGame solnBoard gameBoard
         else do
           let [a, x, b, y, c] = coord
-          if not (isBlank (getValue gameBoard (digitToInt x - 1, digitToInt y - 1)))
+          if not (isBlank (getValue gameBoard (digitToInt y - 1, digitToInt x - 1)))
             then do
               putStrLn "Chosen square is not currently blank. Choose a blank square."
               runGame solnBoard gameBoard
@@ -90,12 +90,12 @@ runGame solnBoard gameBoard = do
                   putStrLn "Invalid choice. Character typed is not a number"
                   runGame solnBoard gameBoard
                 else do
-                  if getValue solnBoard (digitToInt x - 1, digitToInt y - 1) /= newValue
+                  if getValue solnBoard (digitToInt y - 1, digitToInt x - 1) /= newValue
                     then do
                       putStrLn "Number chosen is incorrect. Try again."
                       runGame solnBoard gameBoard
                     else do
-                      let newBoard = putValue gameBoard ((digitToInt x - 1, digitToInt y - 1), newValue)
+                      let newBoard = putValue gameBoard ((digitToInt y - 1, digitToInt x - 1), newValue)
                       runGame solnBoard newBoard
     '2' -> do
       putStrLn "Select square to receive answer for in the format (x, y) with x representing the horizontal cell number and y the vertical cell number with both x and y between 1 and 9 inclusive.\n"
@@ -106,13 +106,13 @@ runGame solnBoard gameBoard = do
           runGame solnBoard gameBoard
         else do
           let [a, x, b, y, c] = coord
-          if not (isBlank (getValue gameBoard (digitToInt x - 1, digitToInt y - 1)))
+          if not (isBlank (getValue gameBoard (digitToInt y - 1, digitToInt x - 1)))
             then do
               putStrLn "Chosen square is not currently blank. Choose a blank square.\n"
               runGame solnBoard gameBoard
             else do
-              let newValue = getValue solnBoard (digitToInt x - 1, digitToInt y - 1)
-              let newBoard = putValue gameBoard ((digitToInt x - 1, digitToInt y - 1), newValue)
+              let newValue = getValue solnBoard (digitToInt y - 1, digitToInt x - 1)
+              let newBoard = putValue gameBoard ((digitToInt y - 1, digitToInt x - 1), newValue)
               putStrLn "Adding hint...\n"
               runGame solnBoard newBoard
     '3' -> do
