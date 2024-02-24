@@ -1,8 +1,8 @@
 module Solver where
-import Sudoku
-import Boards
-import Game
-import Data.Maybe
+import Sudoku ( Position, Value, Board )
+import Boards ()
+import Game ( blank, isBlank, putValue, appendLists )
+import Data.Maybe ( fromJust, isJust )
 
 -- produces a solution for the board or 'Nothing' if the board is unsolvable
 -- uses brute force recursive search with backtracking

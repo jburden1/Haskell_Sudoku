@@ -1,6 +1,6 @@
 module Game where
-import Sudoku
-import Boards
+import Sudoku ( Position, Value, Board, Square )
+import Boards ()
 
 -- contant representing a blank value
 blank :: Char
@@ -62,8 +62,7 @@ formatRow [c0,c1,c2,c3,c4,c5,c6,c7,c8] =
 
 -- produces a single list from a list of lists
 appendLists :: [[a]] -> [a]
-appendLists [] = []
-appendLists (h:t) = h ++ appendLists t
+appendLists = concat
 
 
 
