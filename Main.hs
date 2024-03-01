@@ -12,6 +12,8 @@ import System.Directory (doesFileExist)
 -- :load Main
 -- start
 
+-- starts the program
+start :: IO ()
 start =
   do
     putStrLn "Welcome to Haskell Sudoku!"
@@ -24,7 +26,7 @@ start =
     putStrLn "Leaving Sudoku."
     return ()
 
--- selectBoard :: IO Board
+-- board selection screen
 selectBoard :: IO Board
 selectBoard =
   do
@@ -37,21 +39,27 @@ selectBoard =
     putStrLn "6. Custom Board"
     line <- getLine
     case line of
+      -- effortless board
       "1" -> do
         putStrLn "Selected effortless board..."
         return bd3
+      -- novice board
       "2" -> do
         putStrLn "Selected novice board..."
         return bdNovice
+      -- easy board
       "3" -> do
         putStrLn "Selected easy board..."
         return bdEasy
+      -- moderately difficult board
       "4" -> do
         putStrLn "Selected moderate board..."
         return bdModerate
+      -- difficult board
       "5" -> do
         putStrLn "Selected hard board..."
         return bdHard
+      -- custom board from text file
       "6" -> do
         putStrLn "Type the name of the board file in the format example.txt"
         fileName <- getLine
@@ -66,6 +74,7 @@ selectBoard =
         putStrLn "Invalid selection..."
         selectBoard
 
+-- shows current board and allows user input
 runGame :: Board -> Board -> IO ()
 runGame solnBoard gameBoard = do
   putStrLn $
@@ -81,6 +90,7 @@ runGame solnBoard gameBoard = do
   choice <- getChar
   putStrLn "\n"
   case choice of
+    -- update a particular square
     '1' -> do
       putStrLn "Select a blank square to update in the format (x,y) with x representing the horizontal cell number and y the vertical cell number with both x and y between 1 and 9 inclusive."
       coord <- getLine
@@ -110,6 +120,7 @@ runGame solnBoard gameBoard = do
                     else do
                       let newBoard = putValue gameBoard ((digitToInt y - 1, digitToInt x - 1), newValue)
                       runGame solnBoard newBoard
+    -- get hint at particular square
     '2' -> do
       putStrLn "Select square to receive answer for in the format (x, y) with x representing the horizontal cell number and y the vertical cell number with both x and y between 1 and 9 inclusive.\n"
       coord <- getLine
@@ -135,13 +146,15 @@ runGame solnBoard gameBoard = do
       putStrLn "Thank you for playing."
       return ()
 
--- Validate the input format and length
+-- validates the input format and length
 isValidCoordinates :: String -> Bool
 isValidCoordinates input = isValidCoordLength input && isValidCoordFormat input
 
+-- validates the input string length
 isValidCoordLength :: String -> Bool
 isValidCoordLength input = length input == 5
 
+-- validates coordinate format
 isValidCoordFormat :: String -> Bool
 isValidCoordFormat (a : b : c : d : e : "")
   | a /= '(' = False
