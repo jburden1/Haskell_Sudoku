@@ -6,6 +6,7 @@ import Solver (solveBoard)
 import Sudoku (Board)
 import TextFileReader (parseBoard)
 import System.Directory (doesFileExist)
+import Control.Exception (catch, IOException, try)
 
 -- To run it, try:
 -- ghci
@@ -64,9 +65,15 @@ selectBoard =
         putStrLn "Type the name of the board file in the format example.txt"
         fileName <- getLine
         fileExists <- doesFileExist fileName
+        parsedBoard <- parseBoard fileName
         if fileExists
           then do
-            parseBoard fileName
+            if parsedBoard /= []
+              then do
+                return parsedBoard
+              else do
+                putStrLn "File name has an invalid board..."
+                selectBoard
           else do
             putStrLn "Invalid file name provided..."
             selectBoard
@@ -139,12 +146,18 @@ runGame solnBoard gameBoard = do
               let newBoard = putValue gameBoard ((digitToInt y - 1, digitToInt x - 1), newValue)
               putStrLn "Adding hint...\n"
               runGame solnBoard newBoard
+    -- shows solution
     '3' -> do
       putStrLn "Solving current board..."
       runGame solnBoard solnBoard
+    -- quits the game
     '4' -> do
       putStrLn "Thank you for playing."
       return ()
+    -- invalid input
+    _ -> do
+        putStrLn "Invalid selection..."
+        runGame solnBoard gameBoard
 
 -- validates the input format and length
 isValidCoordinates :: String -> Bool
